@@ -137,7 +137,7 @@
             const zucker = document.getElementById('zucker').value;
             const coffee = Array.from(document.querySelectorAll('input[name="coffee"]:checked')).map(el => el.value).join(',');
 
-            return `brotherwebprint://print?filename=joghurt.lbx&size=58.bin&text_name=${encodeURIComponent(customerName)}&text_coffee=${encodeURIComponent(coffee)}&text_zucker=${encodeURIComponent(zucker)}`;
+            return `brotherwebprint://print?filename=barista.lbx&size=58.bin&text_name=${encodeURIComponent(customerName)}&text_coffee=${encodeURIComponent(coffee)}&text_zucker=${encodeURIComponent(zucker)}`;
         }
 
         function resetInputs() {
@@ -171,4 +171,5 @@
     
     </script>
 </body>
+
 </html>
