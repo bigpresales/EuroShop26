@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brother EuroShop 26 Barista</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('messe.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            color: #4D4D4D;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .buttons, .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .url-scheme {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="Bluebar.jpg" alt="Logo" class="logo">
+        <h1>Brother EuroShop 26</h1>
+        <h2>Barista</h2>
+
+        <div class="section">
+            <h2>Name:</h2>
+            <input type="text" id="customerName" placeholder="Dein Name">
+        </div>
+		<div class="section">
+            <h2>Wähle deinen Kaffee:</h2>
+            <input type="checkbox" name="coffee" value="Cappucino"> Cappucino<br>
+            <input type="checkbox" name="coffee" value="Flat White"> Flat White<br>
+            <input type="checkbox" name="coffee" value="Lungo"> Lungo<br>
+            <input type="checkbox" name="coffee" value="Latte Machiatto"> Latte Machiatto<br>
+            <input type="checkbox" name="coffee" value="Espresso"> Espresso<br>
+        </div>
+        <div class="section">
+            <h2>Zucker?</h2>
+            <select id="zucker">
+                <option value="Nein">Nein</option>
+                <option value="Ja">Ja</option>
+            </select>
+        </div>
+        
+
+        <button onclick="showSummary()">Absenden</button>
+
+        <!-- New Buttons -->
+        <div class="button-group">
+            <button onclick="downloadTemplate()">Download Template</button>
+            <button onclick="window.location.href='https://apps.apple.com/us/app/smooth-print/id1629559918'">Smooth Print for iOS</button>
+            <button onclick="window.location.href='https://support.brother.com/g/b/agreement.aspx?dlid=dlfp101087_000&c=eu_ot&lang=en'">Smooth Print for Android</button>
+        </div>
+
+        <div id="summary" class="section"></div>
+        <div class="buttons">
+            <button id="printButton" style="display:none;" onclick="sendToPrint()">Zum Drucken senden</button>
+            <button id="previewButton" style="display:none;" onclick="previewLink()">Preview Link</button>
+        </div>
+        <div id="urlScheme" class="url-scheme" style="display:none;">
+            <h3>Smooth Print URL Scheme</h3>
+            <p id="urlSchemeText"></p>
+        </div>
+    </div>
+
+    <script>
+        function showSummary() {
+            const customerName = document.getElementById('customerName').value;
+            const zucker = document.getElementById('zucker').value;
+            const coffee = Array.from(document.querySelectorAll('input[name="coffee"]:checked')).map(el => el.value);
+
+            if (coffee.length > 3) {
+                alert("Du kannst nur bis zu 3 Toppings auswählen.");
+                return;
+            }
+
+            const summary = `
+                <h2>Dein Kaffee</h2>
+                <p><strong>Name:</strong> ${customerName}</p>
+				 <p><strong>Kaffe:</strong> ${coffee.join(', ')}</p>
+                <p><strong>Zucker:</strong> ${zucker}</p>
+               
+            `;
+
+            document.getElementById('summary').innerHTML = summary;
+            document.getElementById('printButton').style.display = 'block';
+            document.getElementById('previewButton').style.display = 'block';
+        }
+
+        function sendToPrint() {
+            const url = generateUrlScheme();
+            window.open(url, '_blank');
+            resetInputs();
+        }
+
+        function previewLink() {
+            const url = generateUrlScheme();
+            document.getElementById('urlSchemeText').textContent = url;
+            document.getElementById('urlScheme').style.display = 'block';
+        }
+
+        function generateUrlScheme() {
+            const customerName = document.getElementById('customerName').value;
+            const zucker = document.getElementById('zucker').value;
+            const coffee = Array.from(document.querySelectorAll('input[name="coffee"]:checked')).map(el => el.value).join(',');
+
+            return `brotherwebprint://print?filename=joghurt.lbx&size=58.bin&text_name=${encodeURIComponent(customerName)}&text_coffee=${encodeURIComponent(coffee)}&text_zucker=${encodeURIComponent(zucker)}`;
+        }
+
+        function resetInputs() {
+            document.getElementById('customerName').value = '';
+            document.getElementById('zucker').selectedIndex = 0;
+            document.querySelectorAll('input[name="coffee"]').forEach(checkbox => checkbox.checked = false);
+            document.getElementById('summary').innerHTML = '';
+            document.getElementById('printButton').style.display = 'none';
+            document.getElementById('previewButton').style.display = 'none';
+            document.getElementById('urlScheme').style.display = 'none';
+        }
+            function downloadTemplate() {
+            const link = document.createElement('a');
+            link.href = 'https://github.com/bigpresales/EuroShop26/raw/refs/heads/main/smoothprintbarista.zip'; // 
+            link.download = 'files_keyence.zip';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Limit the selection of coffee to a maximum of 3
+        document.querySelectorAll('input[name="coffee"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkedToppings = document.querySelectorAll('input[name="coffee"]:checked');
+                if (checkedToppings.length > 1) {
+                    this.checked = false;
+                    alert("Du kannst nur einen Kaffee bestellen!");
+                }
+            });
+        });
+    
+    </script>
+</body>
+</html>
